@@ -58,11 +58,11 @@ async function getFetchCalc(startDate, endDate) {
                 const firstTotalMinutes = parseInt(firstHour) * 60 + parseInt(firstMinute);
                 const lastTotalMinutes = parseInt(lastHour) * 60 + parseInt(lastMinute);
 
-                const diffMinutes = lastTotalMinutes - firstTotalMinutes - weekWorkingMinutes;
+                const diffMinutes = lastTotalMinutes - firstTotalMinutes - 60;
                 const diffHours = Math.floor(diffMinutes / 60);
                 const remainingMinutes = Math.round(diffMinutes % 60);
 
-                const extraMinutes = diffMinutes;
+                const extraMinutes = diffMinutes - weekWorkingMinutes;
 
                 results[date] = `출근: ${firstHourStr} >>> 퇴근: ${lastHourStr} >>> ${diffMinutes}분 === ${diffHours}시간 ${remainingMinutes}분 >>> 더 일한 시간: ${extraMinutes}분`;
                 totalExtraMinutes += extraMinutes;
