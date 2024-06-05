@@ -15,6 +15,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 startDate: request.startDate,
                 endDate: request.endDate
               }, response => {
+                console.log(response);
                 sendResponse({result: response.result});
               });
             } else if (attemptCount >= maxAttempts) {

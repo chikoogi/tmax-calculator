@@ -15,12 +15,17 @@ document.getElementById('checkButton').addEventListener('click', async function(
 
   // chrome.tabs.update({ url: "https://otims.tmax.co.kr/frame.screen" });
 
+  //https://otims.tmax.co.kr/insa/attend/findEmpRouteList.screen?srchStDate=20240527&srchEdDate=20240527&srchEmpNo=2022302&srchEmpNm=%EA%B9%80%EC%A7%80%ED%9B%88H
+//		var url = "/insa/attend/findEmpRouteList.screen?srchStDate="+stDate+"&srchEdDate="+stDate+"&srchEmpNo="+empNo+"&srchEmpNm="+empNm;
   chrome.runtime.sendMessage({
     action: "calculateAttendance",
     url: "https://otims.tmax.co.kr/frame.screen",
     startDate: startDate,
     endDate: endDate
   }, function(response) {
-    document.getElementById('output').innerHTML = response.result.join('<br>');
+    for (const [key, value] of Object.entries(response.result)) {
+      document.getElementById('output').innerHTML += `${key}: ${value}<br>`;
+    }
   });
 });
+
