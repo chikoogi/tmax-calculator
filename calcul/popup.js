@@ -24,7 +24,7 @@ document.getElementById('checkButton').addEventListener('click', async function(
     endDate: endDate
   }, function(response) {
     for (const [key, value] of Object.entries(response.result)) {
-      document.getElementById('output').innerHTML += `${key}: ${value}<br>`;
+      document.getElementById('output').innerHTML += `${key}<br> ${value}<br><br>`;
     }
   });
 });

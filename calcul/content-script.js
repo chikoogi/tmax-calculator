@@ -8,6 +8,31 @@ function formatDate(d) {
     return `${year}${month}${day}`;
 }
 
+function formatDateTime(d) {
+    const date = new Date(d);
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${year}.${month}.${day} ${hours}:${minutes}:${seconds}`;
+}
+
+
+function formatTime(d) {
+    const date = new Date(d);
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+}
+
 async function getFetchCalc(startDate, endDate) {
     try{
         const {srchEmpNo, srchEmpNm} = await getFetchInsa();
@@ -19,7 +44,7 @@ async function getFetchCalc(startDate, endDate) {
         const doc = parser.parseFromString(html, "text/html");
         const trAll = doc.querySelectorAll("#resultTable tbody tr");
 
-        console.log(trAll);
+        const TODAY = formatDate(new Date());
         let dateGroups = {};
         trAll.forEach(tr => {
             const date = tr.querySelector('td:nth-child(5)').textContent.trim();
@@ -31,6 +56,8 @@ async function getFetchCalc(startDate, endDate) {
                 }
 
                 dateGroups[date].push(time);
+
+
             }
 
         });
@@ -46,7 +73,12 @@ async function getFetchCalc(startDate, endDate) {
             const lastTime = times[times.length - 1];
 
             const [firstDate, firstHourStr] = firstTime.split(' ');
-            const [lastDate, lastHourStr] = lastTime.split(' ');
+            let [lastDate, lastHourStr] = lastTime.split(' ');
+
+            /* 금일 날짜 예외 처리 - 태그기록이 아닌 현재시간으로 설정 */
+            if(formatDate(date) === TODAY) {
+                lastHourStr = formatTime(new Date());
+            }
 
             if (firstDate !== lastDate) {
                 results[date] = "시작 시각과 종료 시각이 다른 날짜에 걸쳐 있습니다.";
@@ -64,12 +96,17 @@ async function getFetchCalc(startDate, endDate) {
 
                 const extraMinutes = diffMinutes - weekWorkingMinutes;
 
-                results[date] = `출근: ${firstHourStr} >>> 퇴근: ${lastHourStr} >>> ${diffMinutes}분 === ${diffHours}시간 ${remainingMinutes}분 >>> 더 일한 시간: ${extraMinutes}분`;
+                if(formatDate(date) === TODAY) {
+                    results[date] = `출근 🕒 ${firstHourStr} ➜ 현재 🕒 ${lastHourStr} <br>  총 근무시간 &nbsp;&nbsp;&nbsp;&nbsp;⏳ ${diffMinutes}분 (${diffHours}시간 ${remainingMinutes}분) <br> 남은 근무시간 ⏰ ${extraMinutes}분`;
+                } else {
+                    results[date] = `출근 🕒 ${firstHourStr} ➜ 퇴근 🕒 ${lastHourStr} <br>  총 근무시간 &nbsp;&nbsp;&nbsp;&nbsp;⏳ ${diffMinutes}분 (${diffHours}시간 ${remainingMinutes}분) <br> 초과 근무시간 ⏰ ${extraMinutes}분`;
+                }
+
                 totalExtraMinutes += extraMinutes;
             }
         });
 
-        results["남은 시간"] = totalExtraMinutes;
+        results["═══════════════════════════════"] = `총 Total: ${totalExtraMinutes}<br>═══════════════════════════════`;
         return results;
         /*   const url = '/insa/attend/findAttdDailyConfirm.screen';
            const response = await fetch(url);
@@ -141,4 +178,5 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         return true; // 비동기 응답 처리를 위해
     }
 });
+
 

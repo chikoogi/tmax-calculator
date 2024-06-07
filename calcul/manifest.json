@@ -1,10 +1,9 @@
 {
   "manifest_version": 3,
   "name": "치국이의 퇴근계산",
-  "version": "1.0",
+  "version": "1.1",
   "description": "Check and calculate attendance times.",
   "permissions": [
-    "activeTab",
     "tabs"
   ],
   "background": {
